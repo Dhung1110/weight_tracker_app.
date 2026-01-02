@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import '../database/db_helper.dart';
 import 'add_weight_screen.dart';
 import 'profile_screen.dart';
+import 'weight_chart_screen.dart'; // import trang biểu đồ
 
 class HomeScreen extends StatefulWidget {
   final int userId;
@@ -65,8 +66,12 @@ class _HomeScreenState extends State<HomeScreen> {
         title: const Text('Đăng xuất'),
         content: const Text('Bạn chắc chắn muốn đăng xuất?'),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Hủy')),
-          ElevatedButton(onPressed: () => Navigator.pop(context, true), child: const Text('Đăng xuất')),
+          TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text('Hủy')),
+          ElevatedButton(
+              onPressed: () => Navigator.pop(context, true),
+              child: const Text('Đăng xuất')),
         ],
       ),
     );
@@ -123,6 +128,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
 
+      /// ===== FLOATING BUTTON CHO THÊM CÂN NẶNG =====
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
           await Navigator.push(
@@ -187,14 +193,36 @@ class _HomeScreenState extends State<HomeScreen> {
             /// ===== INFO CARDS =====
             Row(
               children: [
-                _infoCard('Trung bình',
-                    averageWeight == null ? '--' : '${averageWeight!.toStringAsFixed(1)} kg',
+                _infoCard(
+                    'Trung bình',
+                    averageWeight == null
+                        ? '--'
+                        : '${averageWeight!.toStringAsFixed(1)} kg',
                     Icons.analytics),
                 const SizedBox(width: 12),
                 _infoCard('BMI', bmi.toStringAsFixed(1), Icons.monitor_weight),
                 const SizedBox(width: 12),
                 _infoCard('Trạng thái', bmiStatus, Icons.favorite),
               ],
+            ),
+
+            const SizedBox(height: 24),
+
+            /// ===== BUTTON XEM BIỂU ĐỒ =====
+            ElevatedButton.icon(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) =>
+                        WeightChartScreen(userId: widget.userId),
+                  ),
+                );
+              },
+              icon: const Icon(Icons.show_chart),
+              label: const Text('Xem biểu đồ cân nặng'),
+              style: ElevatedButton.styleFrom(
+                  minimumSize: const Size.fromHeight(50)),
             ),
 
             const SizedBox(height: 24),
@@ -235,7 +263,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       children: [
                         if (diff != null && diff != 0)
                           Icon(
-                            diff > 0 ? Icons.arrow_upward : Icons.arrow_downward,
+                            diff > 0
+                                ? Icons.arrow_upward
+                                : Icons.arrow_downward,
                             color: diff > 0 ? Colors.red : Colors.green,
                           ),
                         IconButton(
@@ -272,7 +302,8 @@ class _HomeScreenState extends State<HomeScreen> {
               Text(
                 value,
                 textAlign: TextAlign.center,
-                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                style:
+                    const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
               ),
             ],
           ),
