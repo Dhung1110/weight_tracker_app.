@@ -66,8 +66,7 @@ class _WeightChartScreenState extends State<WeightChartScreen>
         elevation: 0,
       ),
       body: isLoading
-          ? const Center(
-              child: CircularProgressIndicator(color: Color(0xFF667eea)))
+          ? const Center(child: CircularProgressIndicator(color: Color(0xFF667eea)))
           : weights.isEmpty
               ? _buildEmptyState()
               : RefreshIndicator(
@@ -75,8 +74,7 @@ class _WeightChartScreenState extends State<WeightChartScreen>
                   child: SingleChildScrollView(
                     physics: const AlwaysScrollableScrollPhysics(),
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 12),
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                       child: Column(
                         children: [
                           _buildChartCard(),
@@ -147,8 +145,7 @@ class _WeightChartScreenState extends State<WeightChartScreen>
                 animation: _animation,
                 builder: (_, __) => CustomPaint(
                   size: const Size(double.infinity, 200),
-                  painter:
-                      _WeightChartPainter(weights, hourFormat, _animation.value),
+                  painter: _WeightChartPainter(weights, hourFormat, _animation.value),
                 ),
               ),
             ),
@@ -347,9 +344,9 @@ class _WeightChartPainter extends CustomPainter {
     if (range < 0.1) range += 1.0;
 
     const double paddingLeft = 40;
-    const double paddingTop = 20;
+    const double paddingTop = 40;
     const double paddingRight = 20;
-    const double paddingBottom = 40;
+    const double paddingBottom = 60;
     final contentHeight = size.height - paddingTop - paddingBottom;
 
     final dx = (weights.length > 1)
@@ -361,20 +358,18 @@ class _WeightChartPainter extends CustomPainter {
       textDirection: ui.TextDirection.ltr,
     );
 
-    // Vẽ lưới ngang (không vẽ số bên trái)
-    final gridPaint = Paint()
-      ..color = Colors.grey.withOpacity(0.15)
+    // ===== Lưới ngang đều =====
+    final int horizontalLines = 5;
+    final Paint gridPaint = Paint()
+      ..color = Colors.grey.withOpacity(0.2)
       ..strokeWidth = 0.5;
-    for (int i = 0; i <= 5; i++) {
-      final y = paddingTop + (i * contentHeight / 5);
-      canvas.drawLine(
-        Offset(paddingLeft, y),
-        Offset(size.width - paddingRight, y),
-        gridPaint,
-      );
+
+    for (int i = 0; i <= horizontalLines; i++) {
+      final y = paddingTop + (i * contentHeight / horizontalLines);
+      canvas.drawLine(Offset(paddingLeft, y), Offset(size.width - paddingRight, y), gridPaint);
     }
 
-    // Vẽ đường line và điểm
+    // ===== Line và điểm =====
     final path = Path();
     final gradientPaintLine = Paint()
       ..shader = ui.Gradient.linear(
@@ -386,10 +381,7 @@ class _WeightChartPainter extends CustomPainter {
       ..strokeWidth = 3.5
       ..style = PaintingStyle.stroke;
 
-    final pointPaint = Paint()
-      ..color = Colors.white
-      ..style = PaintingStyle.fill;
-
+    final pointPaint = Paint()..color = Colors.white..style = PaintingStyle.fill;
     final shadowPaint = Paint()
       ..color = Colors.black.withOpacity(0.1)
       ..strokeWidth = 4
@@ -404,7 +396,7 @@ class _WeightChartPainter extends CustomPainter {
 
       final pointX = paddingLeft + (x - paddingLeft) * animValue;
 
-      // Điểm và shadow
+      // Shadow + điểm
       canvas.drawCircle(Offset(pointX, y + 1), 6, shadowPaint);
       canvas.drawCircle(Offset(pointX, y), 6, pointPaint);
       canvas.drawCircle(Offset(pointX, y), 6, Paint()..color = const Color(0xFF667eea));
@@ -416,14 +408,12 @@ class _WeightChartPainter extends CustomPainter {
           color: Color(0xFF333333),
           fontSize: 11,
           fontWeight: FontWeight.bold,
-          shadows: [
-            Shadow(color: Colors.black12, offset: Offset(1, 1), blurRadius: 2),
-          ],
+          shadows: [Shadow(color: Colors.black12, offset: Offset(1, 1), blurRadius: 2)],
         ),
       );
       textPainter.layout();
       final textX = pointX - textPainter.width / 2;
-      final textY = math.max(y - 20 - textPainter.height, paddingTop - 5);
+      final textY = math.max(y - 20 - textPainter.height, paddingTop - 10);
       textPainter.paint(canvas, Offset(textX, textY));
 
       // Nhãn giờ đo dưới điểm
@@ -439,18 +429,15 @@ class _WeightChartPainter extends CustomPainter {
       textPainter.layout();
       textPainter.paint(canvas, Offset(pointX - textPainter.width / 2, y + 12));
 
-      // Đường line
-      if (i == 0) {
-        path.moveTo(pointX, y);
-      } else {
-        path.lineTo(pointX, y);
-      }
+      // Line nối điểm
+      if (i == 0) path.moveTo(pointX, y);
+      else path.lineTo(pointX, y);
     }
 
     canvas.drawPath(path, shadowPaint);
     canvas.drawPath(path, gradientPaintLine);
 
-    // Trục Y và X chú thích
+    // ===== Trục Y và X =====
     textPainter.text = const TextSpan(
       text: 'Kg',
       style: TextStyle(
@@ -460,7 +447,7 @@ class _WeightChartPainter extends CustomPainter {
       ),
     );
     textPainter.layout();
-    textPainter.paint(canvas, Offset(4, paddingTop - 15));
+    textPainter.paint(canvas, Offset(4, paddingTop - 25));
 
     textPainter.text = const TextSpan(
       text: 'Thời gian',
