@@ -273,9 +273,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             controller: _heightController,
                             keyboardType: const TextInputType.numberWithOptions(decimal: true),
                             decoration: InputDecoration(
-                              labelText: 'Chiều cao (m)',  // 👈 Thêm (m) vào label
+                              labelText: 'Chiều cao',
                               prefixIcon: Icon(Icons.height, color: Colors.deepPurple),
-                              suffixText: 'm',  // 👈 ĐƠN VỊ m bên phải
+                              suffixText: 'm',
                               suffixStyle: const TextStyle(
                                 color: Colors.deepPurple,
                                 fontWeight: FontWeight.w600,

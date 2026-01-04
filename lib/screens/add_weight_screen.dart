@@ -165,10 +165,11 @@ class _AddWeightScreenState extends State<AddWeightScreen> {
                             ),
                           ],
                         ),
-                        child: Icon(
-                          Icons.fitness_center,
-                          size: 80,
-                          color: Colors.deepPurple,
+                        child:
+                        Image.asset(
+                         'assets/images/logo.png',
+                          width: 100,
+                          height: 100,
                         ),
                       ),
                       const SizedBox(height: 16),
