@@ -359,70 +359,112 @@ class _HomeScreenState extends State<HomeScreen> {
               itemCount: weights.length,
               itemBuilder: (_, index) {
                 final item = weights[index];
+                final weightValue = (item['weight'] as num).toDouble();
+                final prevWeight = index + 1 < weights.length
+                    ? (weights[index + 1]['weight'] as num).toDouble()
+                    : null;
+
+                final double? diff = prevWeight != null ? weightValue - prevWeight : null;
+                final bool isIncreasing = diff != null && diff > 0;
 
                 return Card(
                   margin: const EdgeInsets.only(bottom: 12),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(18),
-                  ),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
                   child: ListTile(
                     contentPadding: const EdgeInsets.all(16),
-                    leading: const Icon(Icons.scale, color: Color(0xFF667eea)),
+                    leading: Icon(
+                      Icons.scale,
+                      color: const Color(0xFF667eea),
+                    ),
                     title: Text(
-                      '${(item['weight'] as num).toStringAsFixed(1)} kg',
-                      style: const TextStyle(
+                      '${weightValue.toStringAsFixed(1)} kg',
+                      style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 18,
+                        color: Colors.black87,
                       ),
                     ),
-                    subtitle: Text(
-                      displayFormat.format(
-                        DateTime.parse(item['date']),
-                      ),
-                    ),
-                    trailing: IconButton(
-                      icon: const Icon(Icons.delete, color: Colors.red),
-                      onPressed: () async {
-                        final ok = await showDialog<bool>(
-                          context: context,
-                          builder: (_) => AlertDialog(
-                            title: const Text('Xóa dữ liệu'),
-                            content: const Text('Bạn có chắc muốn xóa?'),
-                            actions: [
-                              TextButton(
-                                onPressed: () =>
-                                    Navigator.pop(context, false),
-                                child: const Text('Hủy'),
+                    subtitle: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(displayFormat.format(DateTime.parse(item['date']))),
+                        if (diff != null) ...[
+                          const SizedBox(height: 4),
+                          Row(
+                            children: [
+                              Icon(
+                                isIncreasing ? Icons.trending_up : Icons.trending_down,
+                                size: 16,
+                                color: isIncreasing ? Colors.red[600]! : Colors.green[600]!,
                               ),
-                              ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.red,
-                                ),
-                                onPressed: () =>
-                                    Navigator.pop(context, true),
-                                child: const Text(
-                                  'Xóa',
-                                  style: TextStyle(color: Colors.white),
+                              const SizedBox(width: 4),
+                              Text(
+                                '${diff > 0 ? '+' : ''}${diff.toStringAsFixed(1)} kg',
+                                style: TextStyle(
+                                  color: isIncreasing ? Colors.red[600]! : Colors.green[600]!,
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 14,
                                 ),
                               ),
                             ],
                           ),
-                        );
-                        if (ok == true) {
-                          await DBHelper.deleteWeight(item['id']);
-                          _loadData();
-                        }
-                      },
+                        ],
+                      ],
+                    ),
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        if (diff != null)
+                          Padding(
+                            padding: const EdgeInsets.only(right: 8),
+                            child: Icon(
+                              isIncreasing ? Icons.arrow_upward : Icons.arrow_downward,
+                              color: isIncreasing ? Colors.red : Colors.green,
+                              size: 20,
+                            ),
+                          ),
+                        IconButton(
+                          icon: const Icon(Icons.delete, color: Colors.red),
+                          onPressed: () async {
+                            final ok = await showDialog<bool>(
+                              context: context,
+                              builder: (_) => AlertDialog(
+                                title: const Text('Xóa dữ liệu'),
+                                content: const Text('Bạn có chắc muốn xóa?'),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Navigator.pop(context, false),
+                                    child: const Text('Hủy'),
+                                  ),
+                                  ElevatedButton(
+                                    style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                                    onPressed: () => Navigator.pop(context, true),
+                                    child: const Text(
+                                      'Xóa',
+                                      style: TextStyle(color: Colors.white),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                            if (ok == true) {
+                              await DBHelper.deleteWeight(item['id']);
+                              _loadData();
+                            }
+                          },
+                        ),
+                      ],
                     ),
                   ),
                 );
               },
             ),
-          ],
-        ),
-      ),
-    );
-  }
+
+           ],
+         ),
+       ),
+     );
+   }
 
   Widget _infoCard(
     String title,
