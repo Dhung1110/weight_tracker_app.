@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'screens/login_screen.dart';
 import 'screens/register_screen.dart';
 import 'screens/home_screen.dart';
+import 'database/db_helper.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await DBHelper.instance.database;
   runApp(const WeightTrackerApp());
 }
 

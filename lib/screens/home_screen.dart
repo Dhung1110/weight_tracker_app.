@@ -57,16 +57,19 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   String get bmiStatus {
-    if (bmi < 18.5) return 'Gầy';
-    if (bmi < 25) return 'Bình thường';
-    if (bmi < 30) return 'Thừa cân';
+    if (bmi == null || bmi == 0) return '--';
+    if (bmi! < 18.5) return 'Gầy';
+    if (bmi! < 25) return 'Bình thường';
+    if (bmi! < 30) return 'Thừa cân';
     return 'Béo phì';
   }
 
+
   Color get bmiColor {
-    if (bmi < 18.5) return Colors.orange;
-    if (bmi < 25) return Colors.green;
-    if (bmi < 30) return Colors.amber;
+    if (bmi == null || bmi == 0) return Colors.grey;
+    if (bmi! < 18.5) return Colors.yellow;
+    if (bmi! < 25) return Colors.green;
+    if (bmi! < 30) return Colors.orange;
     return Colors.red;
   }
 
@@ -177,7 +180,7 @@ class _HomeScreenState extends State<HomeScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
 
-            /// ===== HEADER (FIX OVERFLOW) =====
+            /// ===== HEADER (FIX OVERFLOW)  =====
             Container(
               width: double.infinity,
               margin: const EdgeInsets.only(bottom: 24),
